@@ -1,0 +1,98 @@
+#!/bin/bash
+
+#required programs
+hash scrot 2>/dev/null || { echo >&2 "I require scrot but it's not installed.  Aborting."; exit 1; }
+hash notify-send 2>/dev/null || { echo >&2 "I require notify-send but it's not installed.  Aborting."; exit 1; }
+hash xclip 2>/dev/null || { echo >&2 "I require xclip but it's not installed.  Aborting."; exit 1; }
+
+#default opts
+filetype="png"
+scrotopts=""
+
+# working out options
+#
+# -w = Window
+# -s Select
+# -f fullscreen mode
+# neither w or s = full screen
+# -j Jpeg mode
+# -p PNG mode
+# neither = png mode
+
+while getopts wsfpj opt; do
+  case $opt in
+    w)
+      scrotopts="-ub"
+      ;;
+    s)
+      scrotopts="-s"
+      ;;
+    f)
+      scrotopts=""
+      ;;
+    p)
+      filetype="png"
+      ;;
+    j)
+      filetype="jpg"
+      ;;
+  esac
+done
+
+#things that dont change
+tempdir="/tmp"
+date=$(date '+%Y-%m-%d %H:%I:%S')
+
+#puushkey stored in users dir in a file called .puushkey
+puushkey=$(cat $HOME/.puushkey)
+#file that scrot will make
+file="$tempdir/Screenshot $date.$filetype"
+#command to invoke scrot
+cmd="scrot $scrotopts \"$file\""
+#do it!
+eval $cmd
+scrotret=$?
+
+#something fail?
+if [ $scrotret -ne 0 ]; then
+    echo "Screenshot failed!"
+    exit 1
+fi
+
+#tell the user that we are going to upload
+notify-send --icon=up "Puush" "Puushing \"$file\""
+
+#upload and store results
+puushvar=$(curl "https://puush.me/api/up" -F "k=$puushkey" -F "z=poop" -F "f=@$file" | sed -E 's/^.+,(.+),.+,.+$/\1\n/')
+#and return code
+pushret=$?
+
+#no matter what, remove the file
+rm "$file"
+
+#curl failed hard, so warn user
+if [ $pushret -ne 0 ]; then
+		notify-send --icon=up "Puush Failed!" "I dunno what happened, cURL went bad!"
+    exit 1
+fi
+
+#try and find errors puush sent us
+case $puushvar in
+	"-1,")
+		notify-send --icon=up "Puush Failed!" "I think your API Key is broken :("
+		exit 1
+		;;
+	"-2,")
+		notify-send --icon=up "Puush Failed!" "I dunno what happened, but it didnt work!"
+		exit 1
+		;;
+esac
+
+#if we get here then we should be good!
+
+#using xclip, add the url to the clipboard
+echo "$puushvar" | xclip -selection clipboard
+
+#and make a toast
+notify-send --icon=up "Success!" "URL: $puushvar \n URL added to clipboard!"
+
