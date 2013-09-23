@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# puush linux script
+# By ThePengwin
+# code for curl call taken from https://github.com/blha303/puush-linux
+# Use how you wish!
+
 #required programs
 hash scrot 2>/dev/null || { echo >&2 "I require scrot but it's not installed.  Aborting."; exit 1; }
 hash notify-send 2>/dev/null || { echo >&2 "I require notify-send but it's not installed.  Aborting."; exit 1; }
