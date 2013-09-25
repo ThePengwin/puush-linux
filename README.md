@@ -27,7 +27,7 @@ With no arguments, the script acts like you called it with -fp
 ### Window modes
 - -w - window mode - get the current selected window
 - -s - select mode - Select an area by dragging the cursor over it (uses scripts -s switch)
-- -f - Fullscreen mode - Get the full screen
+- -d - desktop mode - Get the desktop (used to be f, but eventually f will be for a file upload)
 
 ### Image modes
 - -p save as PNG

@@ -16,15 +16,15 @@ scrotopts=""
 
 # working out options
 #
-# -w = Window
-# -s Select
-# -f fullscreen mode
+# -w current window
+# -s selection of desktop
+# -d desktop mode (f will be for a file)
 # neither w or s = full screen
 # -j Jpeg mode
 # -p PNG mode
 # neither = png mode
 
-while getopts wsfpj opt; do
+while getopts wsdpj opt; do
   case $opt in
     w)
       scrotopts="-ub"
@@ -32,7 +32,7 @@ while getopts wsfpj opt; do
     s)
       scrotopts="-s"
       ;;
-    f)
+    d)
       scrotopts=""
       ;;
     p)
