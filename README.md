@@ -22,7 +22,7 @@ To make it work
 
 Options!
 --------
-With no arguments, the script acts like you called it with -fp
+With no arguments, the script acts like you called it with -dp
 
 ### Window modes
 - -w - window mode - get the current selected window
